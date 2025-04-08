@@ -12,23 +12,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Color(0xFFF5F5F5),
+        statusBarColor: Color(0xFFF5F5F5),
       ),
     );
 
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      // title: 'Tezeats Online Bozor',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const SafeArea(
-        child: WebViewApp(),
-      ),
+      home: WebViewApp(),
     );
   }
 }
@@ -62,13 +57,31 @@ class _WebViewAppState extends State<WebViewApp> {
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://tezeats.uz')); // O'z saytingizning URL manzilini qo'ying
+      ..loadRequest(Uri.parse('https://tezeats.uz'));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: WebViewWidget(controller: controller),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.reload();
+        },
+        color: Colors.green,
+        backgroundColor: Colors.white,
+        elevation: 0.0,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: SafeArea(
+              child: WebViewWidget(
+                controller: controller,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
